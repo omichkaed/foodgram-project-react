@@ -58,7 +58,7 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.username[:LEN_TEXT]
-    
+
 
 class Ingredient(models. Model):
     name = models.CharField(
@@ -78,7 +78,7 @@ class Ingredient(models. Model):
 
     def __str__(self):
         return self.name[:LEN_TEXT]
-    
+
 
 class Tag(models. Model):
     name = models.CharField(
@@ -107,7 +107,7 @@ class Tag(models. Model):
 
     def __str__(self):
         return self.name[:LEN_TEXT]
-    
+
 
 class Follow(models. Model):
     user = models.ForeignKey(
