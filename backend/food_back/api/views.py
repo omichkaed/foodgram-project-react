@@ -10,7 +10,6 @@ from rest_framework.permissions import (
 )
 from rest_framework.response import Response
 from rest_framework.decorators import action
-
 from djoser.views import UserViewSet
 
 from api.filters import IngredientFilter, RecipeFilter
@@ -27,7 +26,7 @@ from api.serializers import (
 )
 from recipes.models import (
     RecipeIngredient,
-    Shopping_list,
+    ShoppingList,
     Ingredient,
     Favorite,
     Follow,
@@ -35,7 +34,7 @@ from recipes.models import (
     Tag,
 )
 from recipes.constants import (
-    FILE_SL,
+    FILE_SHOPPING_LIST,
     CONTENT,
 )
 
@@ -69,7 +68,7 @@ class CustomUserViewSet(UserViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @subscribe.mapping.delete
-    def subscribe_delete(self, request, id):
+    def unsubscribe(self, request, id):
         follow = Follow.objects.filter(
             user=request.user,
             author=get_object_or_404(User, id=id),
@@ -107,7 +106,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return RecipeSerializer
         return RecipeCreateSerializers
 
-    def add_to(self, model, user, pk):
+    @staticmethod
+    def __add_to(model, user, pk):
         if model.objects.filter(user=user, recipe__id=pk).exists():
             return Response(
                 {'Error': 'The recipe has already been added'},
@@ -118,7 +118,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
         serializer = RecipeShortSerializer(recipe)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    def delete_from(self, model, user, pk):
+    @staticmethod
+    def __delete_from(model, user, pk):
         obj = model.objects.filter(user=user, recipe__id=pk)
         if obj.exists():
             obj.delete()
@@ -128,39 +129,41 @@ class RecipeViewSet(viewsets.ModelViewSet):
             status=status.HTTP_400_BAD_REQUEST,
         )
 
-    def create_txt_cart(self, ingredients):
-        slist = 'Shopping list'
+    @staticmethod
+    def __create_txt_cart(ingredients):
+        shopping_list = 'Shopping list'
         for ingredient in ingredients:
-            slist += (
+            shopping_list += (
                 f"\n{ingredient['ingredient__name']} "
                 f"({ingredient['ingredient__measurement_unit']}) - "
                 f"{ingredient['amount']}"
             )
-        return slist
+        return shopping_list
 
     @action(detail=True, methods=['post', 'delete'])
     def favorite(self, request, pk):
         if request.method == 'POST':
-            return self.add_to(Favorite, request.user, pk)
-        return self.delete_from(Favorite, request.user, pk)
+            return self.__add_to(Favorite, request.user, pk)
+        return self.__delete_from(Favorite, request.user, pk)
 
     @action(detail=True, methods=['post', 'delete'])
     def shopping_cart(self, request, pk):
         if request.method == 'POST':
-            return self.add_to(Shopping_list, request.user, pk)
-        return self.delete_from(Shopping_list, request.user, pk)
+            return self.__add_to(ShoppingList, request.user, pk)
+        return self.__delete_from(ShoppingList, request.user, pk)
 
     @action(detail=False, methods=('GET', ))
     def download_shopping_cart(self, request):
         ingredients = RecipeIngredient.objects.filter(
-            recipe__sllists__user=request.user
+            recipe__shopping_lists__user=request.user
         ).order_by('ingredient__name').values(
             'ingredient__name',
             'ingredient__measurement_unit'
         ).annotate(amount=Sum('amount'))
-        slist = self.create_txt_cart(ingredients)
-        response = HttpResponse(slist, content_type=CONTENT)
-        response['Content-Disposition'] = f"attachment; filename='{FILE_SL}'"
+        shoppiing_list = self.__create_txt_cart(ingredients)
+        response = HttpResponse(shoppiing_list, content_type=CONTENT)
+        response['Content-Disposition'] = "attachment; "
+        f"filename='{FILE_SHOPPING_LIST}'"
         return response
 
 

@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from recipes.models import (
     RecipeIngredient,
-    Shopping_list,
+    ShoppingList,
     Ingredient,
     Favorite,
     Follow,
@@ -35,13 +35,17 @@ class RecipeAdmin(admin.ModelAdmin):
         'image',
         'text',
         'pub_date',
-        'author'
+        'author',
+        'count_favorite'
     )
     search_fields = ('author__username', 'author__email', 'name')
     list_filter = ('tags',)
     empty_value_display = '-пусто-'
     verbose_name = 'Рецепты',
     inlines = (RecipeIngredientInline, )
+
+    def count_favorite(self, obj):
+        return obj.favorites.count()
 
 
 @admin.register(Ingredient)
@@ -56,8 +60,8 @@ class IngredientAdmin(admin.ModelAdmin):
     verbose_name = 'Ингридиент',
 
 
-@admin.register(Shopping_list)
-class Shopping_listAdmin(admin.ModelAdmin):
+@admin.register(ShoppingList)
+class ShoppingListAdmin(admin.ModelAdmin):
     list_display = (
         'user',
         'recipe',

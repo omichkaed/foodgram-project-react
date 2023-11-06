@@ -17,4 +17,3 @@ class Command(BaseCommand):
                 Ingredient(**row) for row in reader
             )
         self.stdout.write(self.style.SUCCESS('Ингредиенты загружены'))
-        return 'OK'

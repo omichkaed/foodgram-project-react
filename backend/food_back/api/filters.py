@@ -4,7 +4,7 @@ from recipes.models import Ingredient, Recipe
 
 
 class IngredientFilter(FilterSet):
-    name = filters.CharFilter(lookup_expr='startswith')
+    name = filters.CharFilter(lookup_expr='istartswith')
 
     class Meta:
         model = Ingredient
@@ -31,5 +31,5 @@ class RecipeFilter(FilterSet):
     def is_in_shopping_cart_filter(self, queryset, name, value):
         user = self.request.user.pk
         if value:
-            return queryset.filter(sllists__user=user)
+            return queryset.filter(shopping_lists__user=user)
         return queryset

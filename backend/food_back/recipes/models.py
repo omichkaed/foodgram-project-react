@@ -4,7 +4,6 @@ from django.db import models
 
 from colorfield.fields import ColorField
 
-
 from recipes.constants import (
     COLOR_PALETTE,
     MIN_AMOUNT,
@@ -68,7 +67,7 @@ class Ingredient(models. Model):
     )
     measurement_unit = models.CharField(
         'Единица измерения',
-        max_length=200,
+        max_length=LEN_TEXT,
         help_text='Выберите единицу измерения (кг, г, л, мл, иное)',
     )
 
@@ -129,6 +128,12 @@ class Follow(models. Model):
         ordering = ('-user', )
         verbose_name = 'Подписка'
         verbose_name_plural = 'Подписки'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'author'],
+                name='unique_follows_author'
+            )
+        ]
 
     def __str__(self) -> str:
         return f'{self.user} follows {self.author}'
@@ -223,7 +228,7 @@ class RecipeIngredient(models.Model):
         verbose_name_plural = 'Ингредиенты'
 
 
-class Favorite(models. Model):
+class Favorite(models.Model):
     user = models.ForeignKey(
         User,
         related_name='favorites',
@@ -241,18 +246,27 @@ class Favorite(models. Model):
     class Meta:
         verbose_name = 'Избранный'
         verbose_name_plural = 'Избранные'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'recipe'],
+                name='unique_favorite'
+            )
+        ]
+
+    def __str__(self) -> str:
+        return f'{self.user} favorite {self.recipe}'
 
 
-class Shopping_list(models. Model):
+class ShoppingList(models.Model):
     user = models.ForeignKey(
         User,
-        related_name='sllists',
+        related_name='shopping_lists',
         verbose_name='Пользователь',
         on_delete=models.CASCADE,
     )
     recipe = models.ForeignKey(
         Recipe,
-        related_name='sllists',
+        related_name='shopping_lists',
         verbose_name='Рецепт',
         on_delete=models.CASCADE,
         null=True,
@@ -261,3 +275,12 @@ class Shopping_list(models. Model):
     class Meta:
         verbose_name = 'Список покупок'
         verbose_name_plural = 'Списки покупок'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'recipe'],
+                name='unique_shopping_list'
+            )
+        ]
+
+    def __str__(self) -> str:
+        return f'{self.user} shop {self.recipe}'
