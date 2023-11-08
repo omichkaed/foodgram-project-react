@@ -1,7 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-
 from colorfield.fields import ColorField
 
 from recipes.constants import (
@@ -67,7 +66,7 @@ class Ingredient(models. Model):
     )
     measurement_unit = models.CharField(
         'Единица измерения',
-        max_length=LEN_TEXT,
+        max_length=15,
         help_text='Выберите единицу измерения (кг, г, л, мл, иное)',
     )
 
