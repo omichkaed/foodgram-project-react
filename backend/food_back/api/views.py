@@ -108,11 +108,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @staticmethod
     def __add_to(model, user, pk):
-        if model.objects.filter(user=user, recipe__id=pk).exists():
-            return Response(
-                {'Error': 'The recipe has already been added'},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
         recipe = get_object_or_404(Recipe, id=pk)
         model.objects.create(user=user, recipe=recipe)
         serializer = RecipeShortSerializer(recipe)
@@ -120,14 +115,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @staticmethod
     def __delete_from(model, user, pk):
-        obj = model.objects.filter(user=user, recipe__id=pk)
-        if obj.exists():
-            obj.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response(
-            {'errors': 'Recipe removed'},
-            status=status.HTTP_400_BAD_REQUEST,
-        )
+        model.objects.filter(user=user, recipe__id=pk).delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @staticmethod
     def __create_txt_cart(ingredients):
