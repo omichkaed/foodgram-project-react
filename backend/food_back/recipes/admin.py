@@ -44,7 +44,7 @@ class RecipeAdmin(admin.ModelAdmin):
     verbose_name = 'Рецепты',
     inlines = (RecipeIngredientInline, )
 
-    @admin.display(description="Добавлений в избранное")
+    @admin.display(description='Добавлений в избранное')
     def count_favorite(self, obj):
         return obj.favorites.count()
 
