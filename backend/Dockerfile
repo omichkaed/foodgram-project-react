@@ -6,6 +6,6 @@ COPY requirements.txt .
 
 RUN pip install -r requirements.txt --no-cache-dir
 
-COPY food_back/ .
+COPY . .
 
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "food_back.wsgi:application"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "food_back.wsgi"]
