@@ -268,7 +268,7 @@ class RecipeCreateSerializers(serializers.ModelSerializer):
             **validated_data,
         )
         recipe.tags.set(tags)
-        self.create_ingredients(recipe, ingredients)
+        self.__create_ingredients(recipe, ingredients)
         return recipe
 
     @transaction.atomic
