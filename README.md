@@ -4,12 +4,15 @@
 также посмотреть рецепты других пользователей, добавить понравившиеся в избранное и список покупок.
 Список покупок доступен для скачивания в текстовом формате.
 
-Сервис размещен по адресу: https://omichfoodgram.hopto.org/. Полная документация к API находится в файле [docs/openapi-schema.yml](docs/openapi-schema.yml) и доступна по эндпоинту `/api/docs/`.
+Сервис размещен по адресу: https://omichfoodgram.hopto.org/. 
 
+Данные для входа в админку.
+email: admin@admin.ru
+password: admin
 
 В проекте использованы технологии:
 
-Python 3.11
+Python 3.9
 Django 3.2
 Django Rest Framework 3.12.4
 PostgreSQL
@@ -19,38 +22,52 @@ Nginx
 GitHub Actions
 
 
-Запуск проекта в Dev-режиме
+### Как запустить проект в контейнерах локально:
 
-Установите и активируйте виртуальное окружение
-Установите зависимости из файла requirements.txt
-pip install -r requirements.txt
+Клонировать репозиторий и перейти в него в командной строке:
 
-В папке с файлом manage.py выполните команду:
-python3 manage.py runserver
+```
+git clone https://github.com/omichkaed/foodgram-project-react.git
+```
 
+```
+cd foodgram-project-react/infra
+```
 
-Запуск проекта в контейнерах
+Установить Docker Desktop на Ваш компьютер и запустить его.
 
-Запуск проекта с помощью docker compose
-Создать директорию для проекта
+Создать директории infra файл .env и заполнить его своими данными:
 
-В директории для проекта создать файл .env Файл .env должен содержать следующие переменные:
+```
+POSTGRES_DB=foodgram_db
+POSTGRES_USER=foodgram_user
+POSTGRES_PASSWORD=<your_password>
+DB_HOST=db
+DB_PORT=5432
+SECRET_KEY=<your_secret_key>
+ALLOWED_HOSTS=localhost you_can_add_your_host_here
+```
 
-POSTGRES_USER=<пользователь_БД> 
-POSTGRES_PASSWORD=<пароль_пользователя_БД> 
-POSTGRES_DB=<имя_БД> 
-DB_HOST: 127.0.0.1 
-DB_PORT: 5432 
-SECRET_KEY=<django-insecure-сгенерированный_на_https://djecrety.ir/_ключ_для_джанго>
+Запустить оркестр контейнеров:
 
-Устанавливить Docker Compose, для этого поочередно выполнить команды
+```
+docker compose up
+```
 
-sudo apt update 
-sudo apt install curl 
-curl -fSL https://get.docker.com -o get-docker.sh sudo sh ./get-docker.sh sudo apt-get install docker-compose-plugin
+Дождаться сборки и запуска всех контейнеров и в другом окне терминала выполнить миграции:
 
-Запустить Docker Compose в режиме демона
+```
+docker compose exec backend python manage.py migrate 
+```
 
-sudo docker compose -f docker-compose.production.yml up -d
+Собрать и скопировать статику Django:
 
-Обновить git action выполнив коммит на git hub
+```
+docker compose exec backend python manage.py collectstatic
+```
+```
+docker compose exec backend cp -r /app/collected_static/. /backend_static/static/ 
+
+### Автор:
+
+Валиуллов Илья
