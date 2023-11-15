@@ -7,7 +7,9 @@
 Сервис размещен по адресу: https://omichfoodgram.hopto.org/. 
 
 Данные для входа в админку.
+
 email: admin@admin.ru
+
 password: admin
 
 В проекте использованы технологии:

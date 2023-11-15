@@ -192,7 +192,7 @@ class Recipe(models.Model):
     is_published = models.BooleanField(default=True)
 
     class Meta:
-        ordering = ('pub_date',)
+        ordering = ('-pub_date',)
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
 
